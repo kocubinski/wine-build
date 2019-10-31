@@ -6,6 +6,7 @@ set -o errexit
 WINESRC=$PWD/../wine
 cp mouse-hack.patch $WINESRC
 cd $WINESRC
+git reset HEAD --hard
 patch -p1 < mouse-hack.patch
 cd -
 
