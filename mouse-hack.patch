@@ -1,8 +1,16 @@
 diff --git a/dlls/dinput/mouse.c b/dlls/dinput/mouse.c
-index 03fc0b025e..5806129e81 100644
+index 52a766b2a1..3cc45e16ed 100644
 --- a/dlls/dinput/mouse.c
 +++ b/dlls/dinput/mouse.c
-@@ -358,8 +358,17 @@ static int dinput_mouse_hook( LPDIRECTINPUTDEVICE8A iface, WPARAM wparam, LPARAM
+@@ -24,6 +24,7 @@
+ 
+ #include <stdarg.h>
+ #include <string.h>
++#include <stdio.h>
+ 
+ #include "windef.h"
+ #include "winbase.h"
+@@ -357,8 +358,25 @@ static int dinput_mouse_hook( LPDIRECTINPUTDEVICE8A iface, WPARAM wparam, LPARAM
  
              if (pt.x || pt.y)
              {
@@ -12,9 +20,17 @@ index 03fc0b025e..5806129e81 100644
 +                BOOL edge = FALSE;
 +                if (GetClientRect(This->base.win, &rect))
 +                {
++		    int nx = hook->pt.x + pt.x;
++		    int ny = hook->pt.y + pt.y;
++		    int b = 40;
++		    printf("RECT0: %i, %i, %i, %i\n", rect.left, rect.top, rect.right, rect.bottom);
 +                    MapWindowPoints( This->base.win, 0, (POINT *)&rect, 2 );
-+                    edge = hook->pt.x < 2 || hook->pt.y < 2 || hook->pt.x > ((rect.left + rect.right) - 2)
-+                        || hook->pt.y > ((rect.top + rect.bottom) - 2);
++		    printf("RECT1: left %i, top %i, right %i, bottom %i\n", rect.left, rect.top, rect.right, rect.bottom);
++		    printf("MOUSE: %ix%i | %ix%i | %ix%i\n", hook->pt.x, hook->pt.y, pt.x, pt.y, nx, ny);
++                    edge = nx <= rect.left + b
++		      || ny <= rect.top + b
++		      || nx >= rect.right - b
++		      || ny >= rect.bottom - b;
 +                }
 +                if ((This->warp_override == WARP_FORCE_ON)
 +                    || (edge && This->m_state.rgbButtons[1] == 0x80)

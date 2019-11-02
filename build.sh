@@ -10,10 +10,11 @@ git reset HEAD --hard
 patch -p1 < mouse-hack.patch
 cd -
 
-docker build . --tag wine-build
+docker build builder/ --tag wine-build
 
+#	/bin/bash -c "cd /out && ../wine/configure && make -j5"
 docker run \
 	-v $WINESRC:/wine \
 	-v $PWD:/out \
 	wine-build \
-	/bin/bash -c "cd /out && ../wine/configure && make -j5"
+	/bin/bash -c "cd /out && make -j5"
