@@ -7,13 +7,17 @@ $(WINESRC):
 source: $(WINESRC)
 	cd $(WINESRC) && patch -p1 < $(PWD)/mouse.patch
 
-build: source
+build: 
 	docker build builder/ --tag wine-build
 	docker run \
 	 -v $(WINESRC):/$(SRC) \
 	 -v $(PWD)/out:/out \
 	 wine-build \
-	 /bin/bash -c "cd /out && /$(SRC)/configure && make -j5"
+	 /bin/bash -c "cd /$(SRC) \
+&& autoconf \
+&& cd /out \
+&& /$(SRC)/configure \
+&& make -j5"
 
 clean:
 	rm -rf src/*

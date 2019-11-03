@@ -4,3 +4,4 @@ RUN . /etc/lsb-release && echo "deb-src http://us.archive.ubuntu.com/ubuntu/ $DI
 RUN apt-get update
 RUN apt-get install build-essential --yes
 RUN apt-get build-dep wine --yes
+RUN apt-get install autoconf --yes
