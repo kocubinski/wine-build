@@ -1,12 +1,2 @@
-dlls
-fonts
-include
-libs
-loader
-po
-programs
-server
-tools
-Makefile
-config*
-wine
+src/
+out/
