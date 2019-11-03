@@ -3,8 +3,9 @@
 set -o nounset
 set -o errexit
 
-WINESRC=$PWD/../wine
-cp mouse-hack.patch $WINESRC
+WINESRC=$PWD/src/wine-4.0
+
+cp mouse.patch $WINESRC
 cd $WINESRC
 git reset HEAD --hard
 patch -p1 < mouse-hack.patch
