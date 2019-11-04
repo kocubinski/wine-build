@@ -1,16 +1,8 @@
 diff --git a/dlls/dinput/mouse.c b/dlls/dinput/mouse.c
-index 52a766b2a1..3cc45e16ed 100644
+index 7133359351..e35c6c3561 100644
 --- a/dlls/dinput/mouse.c
 +++ b/dlls/dinput/mouse.c
-@@ -24,6 +24,7 @@
- 
- #include <stdarg.h>
- #include <string.h>
-+#include <stdio.h>
- 
- #include "windef.h"
- #include "winbase.h"
-@@ -357,8 +358,25 @@ static int dinput_mouse_hook( LPDIRECTINPUTDEVICE8A iface, WPARAM wparam, LPARAM
+@@ -350,8 +350,22 @@ static int dinput_mouse_hook( LPDIRECTINPUTDEVICE8A iface, WPARAM wparam, LPARAM
  
              if (pt.x || pt.y)
              {
@@ -23,10 +15,7 @@ index 52a766b2a1..3cc45e16ed 100644
 +		    int nx = hook->pt.x + pt.x;
 +		    int ny = hook->pt.y + pt.y;
 +		    int b = 40;
-+		    printf("RECT0: %i, %i, %i, %i\n", rect.left, rect.top, rect.right, rect.bottom);
 +                    MapWindowPoints( This->base.win, 0, (POINT *)&rect, 2 );
-+		    printf("RECT1: left %i, top %i, right %i, bottom %i\n", rect.left, rect.top, rect.right, rect.bottom);
-+		    printf("MOUSE: %ix%i | %ix%i | %ix%i\n", hook->pt.x, hook->pt.y, pt.x, pt.y, nx, ny);
 +                    edge = nx <= rect.left + b
 +		      || ny <= rect.top + b
 +		      || nx >= rect.right - b

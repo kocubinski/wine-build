@@ -12,9 +12,8 @@ cd -
 
 docker build builder/ --tag wine-build
 
-#	/bin/bash -c "cd /out && ../wine/configure && make -j5"
 docker run \
 	-v $WINESRC:/wine \
 	-v $PWD:/out \
 	wine-build \
-	/bin/bash -c "cd /out && make -j5"
+	/bin/bash -c "cd /out && ../wine/configure && make -j4"
