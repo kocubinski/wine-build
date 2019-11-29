@@ -1,6 +1,5 @@
-diff -Naur wine-4.0.orig/dlls/dinput/mouse.c wine-4.0/dlls/dinput/mouse.c
---- wine-4.0.orig/dlls/dinput/mouse.c	2019-11-03 13:47:15.461322551 -0500
-+++ wine-4.0/dlls/dinput/mouse.c	2019-11-03 16:08:37.551808488 -0500
+--- a/dlls/dinput/mouse.c
++++ b/dlls/dinput/mouse.c
 @@ -350,8 +350,22 @@
  
              if (pt.x || pt.y)
