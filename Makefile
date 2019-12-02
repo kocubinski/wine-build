@@ -4,6 +4,13 @@ SRC := src/$(VERSION)
 WINESRC := $(PWD)/$(SRC)
 PATCH := $(PWD)/mouse.patch
 
+builder/Dockerfile:
+	sed "s|@RELEASE@|$(RELEASE)|g;" builder/Dockerfile.in > \
+	 builder/Dockerfile
+
+image: builder/Dockerfile
+	docker build builder/ --tag wine-build
+
 src:
 	mkdir src && \
 	 cd src && \
@@ -13,11 +20,17 @@ src:
 	 cd $(VERSION).patched && patch -p1 < $(PATCH) && \
 	 cd ../$(VERSION) && patch -p1 < $(PATCH)
 
-builder/Dockerfile:
-	sed "s|@RELEASE@|$(RELEASE)|g;" builder/Dockerfile.in > \
-	 builder/Dockerfile
+src-docker:
+	mkdir src
+	docker run \
+	 -v $(PWD)/src:/src \
+	 wine-build \
+	 /bin/bash -c "cd /src && \
+chown -Rv _apt:root /src && \
+apt source wine"
+	sudo chown -R $(shell id -u):$(shell id -g) src
 
-build: src builder/Dockerfile
+build: src image
 	docker build builder/ --tag wine-build
 	cp $(PATCH) src/mouse.patch
 	docker run \
