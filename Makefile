@@ -1,4 +1,5 @@
-VERSION := wine-4.0
+RELEASE ?= disco
+VERSION ?= wine-4.0
 SRC := src/$(VERSION)
 WINESRC := $(PWD)/$(SRC)
 PATCH := $(PWD)/mouse.patch
@@ -8,31 +9,17 @@ src:
 	 cd src && \
 	 apt source wine && \
 	 cp -r $(VERSION) $(VERSION).orig && \
-	 cp -r $(VERSION) $(VERSION).patched
+	 cp -r $(VERSION) $(VERSION).patched && \
+	 cd $(VERSION).patched && patch -p1 < $(PATCH) && \
+	 cd ../$(VERSION) && patch -p1 < $(PATCH)
 
-src-old:
-	mkdir src && \
-	 cd src && \
-	 apt source wine \
-	 && \
-	 cd $(VERSION) && \
-	 cp $(PATCH) . && \
-	 patch -p1 < $(PWD)/mouse.patch
+builder/Dockerfile:
+	sed "s|@RELEASE@|$(RELEASE)|g;" builder/Dockerfile.in > \
+	 builder/Dockerfile
 
-
-source: $(WINESRC)
-
-build-src: 
+build: src builder/Dockerfile
 	docker build builder/ --tag wine-build
-	docker run \
-	 -v $(PWD)/out:/out \
-	 wine-build \
-	 /bin/bash -c "mkdir /src && \
-cd /src && \
-apt-get source wine --compile"
-
-build:
-	docker build builder/ --tag wine-build
+	cp $(PATCH) src/mouse.patch
 	docker run \
 	 -i \
 	 -v $(PWD)/src:/src \
@@ -62,3 +49,4 @@ uninstall:
 clean:
 	rm -rf src
 	rm -rf out
+	rm -rf builder/Dockerfile
