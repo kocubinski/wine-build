@@ -50,6 +50,15 @@ rebuild:
 	 /bin/bash -c "cd /$(SRC) && \
 dpkg-buildpackage -us -uc"
 
+install:
+	sudo dpkg -i src/fonts-wine_4*.deb
+	sudo dpkg -i src/libwine_4*.deb
+	sudo dpkg -i src/wine32_4*.deb
+	sudo dpkg -i src/wine_4*.deb
+
+uninstall:
+	sudo apt remove fonts-wine libwine:i386 wine32 wine --yes
+
 clean:
 	rm -rf src
 	rm -rf out
