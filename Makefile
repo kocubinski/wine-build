@@ -1,5 +1,5 @@
-RELEASE ?= disco
-VERSION ?= wine-4.0
+RELEASE ?= eoan
+VERSION ?= wine-4.0.2
 SRC := src/$(VERSION)
 WINESRC := $(PWD)/$(SRC)
 PATCH := $(PWD)/mouse.patch
