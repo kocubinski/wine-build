@@ -1,5 +1,5 @@
-RELEASE ?= eoan
-VERSION ?= wine-4.0.2
+RELEASE ?= groovy
+VERSION ?= wine-5.0
 SRC := src/$(VERSION)
 WINESRC := $(PWD)/$(SRC)
 PATCH := $(PWD)/mouse.patch
@@ -51,10 +51,10 @@ rebuild:
 dpkg-buildpackage -us -uc"
 
 install:
-	sudo dpkg -i src/fonts-wine_4*.deb
-	sudo dpkg -i src/libwine_4*.deb
-	sudo dpkg -i src/wine32_4*.deb
-	sudo dpkg -i src/wine_4*.deb
+	sudo dpkg -i src/fonts-wine_5*.deb
+	sudo dpkg -i src/libwine_5*.deb
+	sudo dpkg -i src/wine32_5*.deb
+	sudo dpkg -i src/wine_5*.deb
 
 uninstall:
 	sudo apt remove fonts-wine libwine:i386 wine32 wine --yes

@@ -25,3 +25,14 @@
                      This->need_warp = TRUE;
              }
              break;
+
+--- a/dlls/shell32/Makefile.in
++++ b/dlls/shell32/Makefile.in
+@@ -2,6 +2,7 @@
+ MODULE    = shell32.dll
+ IMPORTLIB = shell32
+ IMPORTS   = uuid shlwapi user32 gdi32 advapi32
++CFLAGS   += -Wno-array-bounds
+ DELAYIMPORTS = ole32 oleaut32 shdocvw version comctl32 gdiplus
+ # AUTHORS file is in the top-level directory
+ EXTRAINCL = -I$(top_srcdir)
