@@ -52,7 +52,8 @@ dpkg-buildpackage -us -uc"
 
 install:
 	sudo dpkg -i src/fonts-wine_5*.deb
-	sudo dpkg -i src/libwine_5*.deb
+	-sudo dpkg -i src/libwine_5*.deb
+	sudo apt install -f --yes
 	sudo dpkg -i src/wine32_5*.deb
 	sudo dpkg -i src/wine_5*.deb
 
