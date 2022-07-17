@@ -1,15 +1,26 @@
 RELEASE ?= groovy
-VERSION ?= wine-5.0
+VERSION ?= wine-6.0.3~repack
 SRC := src/$(VERSION)
 WINESRC := $(PWD)/$(SRC)
-PATCH := $(PWD)/mouse.patch
+PATCH := $(PWD)/mtkoan.patch
 
 builder/Dockerfile:
 	sed "s|@RELEASE@|$(RELEASE)|g;" builder/Dockerfile.in > \
 	 builder/Dockerfile
 
+mtkoan.patch:
+	cat mouse.patch > mtkoan.patch
+	cat misc.patch >> mtkoan.patch
+
 image: builder/Dockerfile
 	docker build builder/ --tag wine-build
+
+# clone for manual modification. try
+#
+# or so to generate the patch file.
+wine-src:
+	mkdir -p src
+	git clone -b wine-6.0.3 --depth 1 https://github.com/wine-mirror/wine.git src/wine
 
 src:
 	mkdir src && \
@@ -30,15 +41,15 @@ chown -Rv _apt:root /src && \
 apt source wine"
 	sudo chown -R $(shell id -u):$(shell id -g) src
 
-build: src image
+build: mtkoan.patch src image
 	docker build builder/ --tag wine-build
-	cp $(PATCH) src/mouse.patch
+	cp $(PATCH) src/mtkoan.patch
 	docker run \
 	 -i \
 	 -v $(PWD)/src:/src \
 	 wine-build \
 	 /bin/bash -c "cd /$(SRC) && \
-dpkg-source --commit . mouse-hack ./mouse.patch && \
+dpkg-source --commit . mtkoan-hack ./mtkoan.patch && \
 dpkg-buildpackage -us -uc"
 
 rebuild:
@@ -51,11 +62,11 @@ rebuild:
 dpkg-buildpackage -us -uc"
 
 install:
-	sudo dpkg -i src/fonts-wine_5*.deb
-	-sudo dpkg -i src/libwine_5*.deb
+	sudo dpkg -i src/fonts-wine_6*.deb
+	-sudo dpkg -i src/libwine_6*.deb
 	sudo apt install -f --yes
-	sudo dpkg -i src/wine32_5*.deb
-	sudo dpkg -i src/wine_5*.deb
+	sudo dpkg -i src/wine32_6*.deb
+	sudo dpkg -i src/wine_6*.deb
 
 uninstall:
 	sudo apt remove fonts-wine libwine:i386 wine32 wine --yes
@@ -64,3 +75,4 @@ clean:
 	rm -rf src
 	rm -rf out
 	rm -rf builder/Dockerfile
+	rm -f mtkoan.patch

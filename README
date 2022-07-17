@@ -5,3 +5,7 @@ was required for MIDI sound to function post-install
 sudo apt install lxc lxc-templates
 
 sudo lxc-create -n32bitwine -t ubuntu -- --arch i386
+
+----
+
+winevulkan patch was sourced from https://www.mail-archive.com/debian-bugs-dist@lists.debian.org/msg1858934.html

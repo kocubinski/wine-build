@@ -1,38 +1,31 @@
 --- a/dlls/dinput/mouse.c
 +++ b/dlls/dinput/mouse.c
-@@ -350,8 +350,22 @@
+@@ -371,9 +371,25 @@
  
-             if (pt.x || pt.y)
-             {
--                if ((This->warp_override == WARP_FORCE_ON) ||
--                    (This->warp_override != WARP_DISABLE && (This->base.dwCoopLevel & DISCL_EXCLUSIVE)))
-+	         RECT rect;
-+                BOOL edge = FALSE;
-+                if (GetClientRect(This->base.win, &rect))
-+                {
-+		    int nx = hook->pt.x + pt.x;
-+		    int ny = hook->pt.y + pt.y;
-+		    int b = 40;
-+                    MapWindowPoints( This->base.win, 0, (POINT *)&rect, 2 );
-+                    edge = nx <= rect.left + b
-+		      || ny <= rect.top + b
-+		      || nx >= rect.right - b
-+		      || ny >= rect.bottom - b;
-+                }
-+                if ((This->warp_override == WARP_FORCE_ON)
-+                    || (edge && This->m_state.rgbButtons[1] == 0x80)
-+                    || (This->warp_override != WARP_DISABLE && (This->base.dwCoopLevel & DISCL_EXCLUSIVE)))
-                     This->need_warp = TRUE;
-             }
-             break;
-
---- a/dlls/shell32/Makefile.in
-+++ b/dlls/shell32/Makefile.in
-@@ -2,6 +2,7 @@
- MODULE    = shell32.dll
- IMPORTLIB = shell32
- IMPORTS   = uuid shlwapi user32 gdi32 advapi32
-+CFLAGS   += -Wno-array-bounds
- DELAYIMPORTS = ole32 oleaut32 shdocvw version comctl32 gdiplus
- # AUTHORS file is in the top-level directory
- EXTRAINCL = -I$(top_srcdir)
+     if (rel.x || rel.y)
+     {
+-        if ((This->warp_override == WARP_FORCE_ON) ||
+-            (This->warp_override != WARP_DISABLE && (This->base.dwCoopLevel & DISCL_EXCLUSIVE)))
+-            This->need_warp = TRUE;
++      // edge detection, doesn't quite work right since 6.0.  mouse state increments endlessly.
++      // not sure why i impl in the first place now.
++      /*RECT rect;
++      BOOL edge = FALSE;
++      int b = 300;
++      if (GetClientRect(This->base.win, &rect))
++	{
++	  int nx = This->m_state.lX + rel.x;
++	  int ny = This->m_state.lY + pt.y;
++	  MapWindowPoints( This->base.win, 0, (POINT *)&rect, 2 );
++	  edge = nx <= rect.left + b
++	    || ny <= rect.top + b
++	    || nx >= rect.right - b
++	    || ny >= rect.bottom - b;
++	    }*/
++      if ((This->warp_override == WARP_FORCE_ON)
++	  || This->m_state.rgbButtons[1] == 0x80
++	  || (This->warp_override != WARP_DISABLE && (This->base.dwCoopLevel & DISCL_EXCLUSIVE)))
++	This->need_warp = TRUE;
+     }
+ 
+     if (ri->data.mouse.usButtonFlags & RI_MOUSE_WHEEL)

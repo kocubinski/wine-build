@@ -5,3 +5,4 @@ RUN apt-get update
 RUN apt-get install build-essential --yes
 RUN apt-get build-dep wine --yes
 RUN apt-get install vim --yes
+
