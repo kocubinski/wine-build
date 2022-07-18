@@ -17,12 +17,29 @@ image: builder/Dockerfile
 
 # clone for manual modification. try
 #
+# diff -Naur src/wine-6.0.3\~repack.orig/dlls/dinput/mouse.c src/wine/dlls/dinput/mouse.c
+# 
 # or so to generate the patch file.
-wine-src:
+wine-src: mtkoan.patch
 	mkdir -p src
 	git clone -b wine-6.0.3 --depth 1 https://github.com/wine-mirror/wine.git src/wine
+	cd src/wine && patch -p1 < $(PATCH)
 
-src:
+wine-configure:
+	docker run \
+	 -i \
+	 -v $(PWD)/src:/src \
+	 wine-build \
+	 /bin/bash -c "cd /src/wine && ./configure"
+
+wine-make:
+	docker run \
+	 -i \
+	 -v $(PWD)/src:/src \
+	 wine-build \
+	 /bin/bash -c "cd /src/wine && make -j20"
+
+src: mtkoan.patch
 	mkdir src && \
 	 cd src && \
 	 apt source wine && \
@@ -41,7 +58,7 @@ chown -Rv _apt:root /src && \
 apt source wine"
 	sudo chown -R $(shell id -u):$(shell id -g) src
 
-build: mtkoan.patch src image
+build: src image
 	docker build builder/ --tag wine-build
 	cp $(PATCH) src/mtkoan.patch
 	docker run \

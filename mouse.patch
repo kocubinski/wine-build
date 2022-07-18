@@ -1,31 +1,22 @@
 --- a/dlls/dinput/mouse.c
 +++ b/dlls/dinput/mouse.c
-@@ -371,9 +371,25 @@
- 
-     if (rel.x || rel.y)
-     {
--        if ((This->warp_override == WARP_FORCE_ON) ||
--            (This->warp_override != WARP_DISABLE && (This->base.dwCoopLevel & DISCL_EXCLUSIVE)))
--            This->need_warp = TRUE;
-+      // edge detection, doesn't quite work right since 6.0.  mouse state increments endlessly.
-+      // not sure why i impl in the first place now.
-+      /*RECT rect;
-+      BOOL edge = FALSE;
-+      int b = 300;
-+      if (GetClientRect(This->base.win, &rect))
-+	{
-+	  int nx = This->m_state.lX + rel.x;
-+	  int ny = This->m_state.lY + pt.y;
-+	  MapWindowPoints( This->base.win, 0, (POINT *)&rect, 2 );
-+	  edge = nx <= rect.left + b
-+	    || ny <= rect.top + b
-+	    || nx >= rect.right - b
-+	    || ny >= rect.bottom - b;
-+	    }*/
-+      if ((This->warp_override == WARP_FORCE_ON)
-+	  || This->m_state.rgbButtons[1] == 0x80
-+	  || (This->warp_override != WARP_DISABLE && (This->base.dwCoopLevel & DISCL_EXCLUSIVE)))
-+	This->need_warp = TRUE;
+@@ -393,6 +393,19 @@
+         }
      }
  
-     if (ri->data.mouse.usButtonFlags & RI_MOUSE_WHEEL)
++    if (This->m_state.rgbButtons[1] == 0x80) {
++      if (!This->clipped) {
++	  RECT rect;
++	  GetClientRect(This->base.win, &rect);
++	  MapWindowPoints( This->base.win, 0, (POINT *)&rect, 2 );
++	  ClipCursor(&rect);
++	  This->clipped = TRUE;
++	}
++    } else if (This->m_state.rgbButtons[1] == 0) {
++      ClipCursor(NULL);
++      This->clipped = FALSE;
++    }
++    
+     LeaveCriticalSection( &This->base.crit );
+ }
+ 
